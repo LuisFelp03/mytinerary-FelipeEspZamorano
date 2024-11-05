@@ -10,7 +10,6 @@ export const fetchCities = createAsyncThunk('city/fetchCities', async () => {
     return data.response;
 });
 
-
 const citySlice = createSlice({
     name: 'city',
     initialState: {
@@ -29,7 +28,11 @@ const citySlice = createSlice({
             );
         },
         selectCity(state, action) {
-            state.selectedCity = action.payload;
+            const cityId = action.payload; // Esto debería ser solo el `id`
+            console.log("City ID from action payload:", cityId); // Confirmar que `cityId` es solo el ID
+            console.log("Available City IDs:", state.cities.map(city => city._id));
+
+            state.selectedCity = state.cities.find(city => city._id === cityId) || null;
         },
     },
     extraReducers: (builder) => {

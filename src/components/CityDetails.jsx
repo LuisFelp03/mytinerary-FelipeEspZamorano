@@ -1,7 +1,8 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchItineraries } from '../store/actions/itinerariesActions';
+import { fetchCities } from '../redux/slices/citySlice';
 import { HeartIcon } from '@heroicons/react/24/solid';
 
 const CityDetail = () => {
@@ -9,23 +10,19 @@ const CityDetail = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const cities = useSelector((state) => state.city.cities);
     const itineraries = useSelector((state) => state.itineraries.itineraries);
-    const cities = useSelector((state) => state.cities.cities);
-
-    // Memoizar el filtro para encontrar la ciudad por ID
-    const city = useMemo(
-        () => cities.find((city) => city._id === cityId),
-        [cities, cityId]
-    );
+    const city = cities.find((city) => city._id === cityId); // Obtiene la ciudad directamente
 
     const [expandedItineraries, setExpandedItineraries] = useState(new Set());
     const [likesCount, setLikesCount] = useState({});
 
     useEffect(() => {
-        if (cityId) {
-            dispatch(fetchItineraries(cityId));
+        if (cityId && !city) {
+            dispatch(fetchCities()); // Carga las ciudades si no están disponibles
+            dispatch(fetchItineraries(cityId)); // Carga itinerarios para la ciudad
         }
-    }, [dispatch, cityId]);
+    }, [dispatch, cityId, city]);
 
     const toggleExpand = (id) => {
         const newExpanded = new Set(expandedItineraries);
@@ -44,13 +41,15 @@ const CityDetail = () => {
         }));
     };
 
+    // Mostrar mensaje si la ciudad no se encuentra
     if (!city) return <h1>City not found</h1>;
 
+    // Renderiza los detalles de la ciudad e itinerarios
     return (
         <div className="flex flex-col min-h-screen">
             <div
                 className="bg-cover bg-center h-screen relative"
-                style={{ backgroundImage: city?.photo ? `url(${city.photo})` : 'none' }}
+                style={{ backgroundImage: city.photo ? `url(${city.photo})` : 'none' }}
             >
                 <div className="bg-black bg-opacity-30 h-full flex flex-col items-center justify-center text-center">
                     <h1 className="text-7xl font-bold text-white">
@@ -133,3 +132,35 @@ const CityDetail = () => {
 };
 
 export default CityDetail;
+
+// import { useEffect } from 'react';
+// import { useParams } from 'react-router-dom';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { fetchItineraries } from '../store/actions/itinerariesActions';
+// import { selectCity } from '../redux/slices/citySlice';
+
+// const CityDetail = () => {
+//     const { cityId } = useParams(); // `cityId` debería ser un string, no un objeto
+//     const dispatch = useDispatch();
+
+//     const itineraries = useSelector((state) => state.itineraries.itineraries);
+//     const city = useSelector((state) => state.city.selectedCity);
+
+//     useEffect(() => {
+//         console.log("cityId in useParams:", cityId); // Confirmación de que `cityId` es un string
+//         if (cityId) {
+//             dispatch(selectCity(cityId)); // Asegúrate de pasar solo el `id` aquí
+//             dispatch(fetchItineraries(cityId));
+//         }
+//     }, [dispatch, cityId]);
+
+//     if (!city) return <h1>City not found</h1>;
+
+//     return (
+//         <div>
+//             {/* Renderizado de detalles de la ciudad e itinerarios */}
+//         </div>
+//     );
+// };
+
+// export default CityDetail;

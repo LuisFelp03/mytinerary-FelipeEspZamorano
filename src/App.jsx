@@ -1,4 +1,3 @@
-import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import CallToAction from './components/CallToAction';
@@ -14,11 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HeroSection />} />
         <Route path="/cities" element={<CitiesPage />} />
-        <Route path="/city/:id" element={
-          <ErrorBoundary>
-            <CityDetails />
-          </ErrorBoundary>
-        } />
+        <Route path="/city/:cityId" element={<CityDetails />} /> {/* Cambiado a `cityId` */}
       </Routes>
       <CallToAction />
       <Footer />
