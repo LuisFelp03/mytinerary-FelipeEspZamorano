@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const fetchCities = createAsyncThunk('city/fetchCities', async () => {
-    const response = await fetch("http://localhost:8080/api/city/AllCities");
+    const response = await fetch("http://localhost:8080/api/cities");
     if (!response.ok) {
         throw new Error('Request failed');
     }
