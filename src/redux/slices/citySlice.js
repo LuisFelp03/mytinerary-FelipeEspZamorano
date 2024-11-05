@@ -6,8 +6,10 @@ export const fetchCities = createAsyncThunk('city/fetchCities', async () => {
         throw new Error('Request failed');
     }
     const data = await response.json();
-    return data;
+    console.log("Data fetched from API:", data.response);
+    return data.response;
 });
+
 
 const citySlice = createSlice({
     name: 'city',

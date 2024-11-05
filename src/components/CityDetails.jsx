@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchItineraries } from '../store/actions/itinerariesActions';
@@ -8,20 +8,32 @@ const CityDetail = () => {
     const { cityId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { itineraries, loading, error } = useSelector((state) => state.itineraries);
-    const { cities } = useSelector((state) => state.cities);
-    const city = cities.find((city) => city._id === cityId);
+
+    const itineraries = useSelector((state) => state.itineraries.itineraries);
+    const cities = useSelector((state) => state.cities.cities);
+
+    // Memoizar el filtro para encontrar la ciudad por ID
+    const city = useMemo(
+        () => cities.find((city) => city._id === cityId),
+        [cities, cityId]
+    );
 
     const [expandedItineraries, setExpandedItineraries] = useState(new Set());
     const [likesCount, setLikesCount] = useState({});
 
     useEffect(() => {
-        dispatch(fetchItineraries(cityId));
+        if (cityId) {
+            dispatch(fetchItineraries(cityId));
+        }
     }, [dispatch, cityId]);
 
     const toggleExpand = (id) => {
         const newExpanded = new Set(expandedItineraries);
-        newExpanded.has(id) ? newExpanded.delete(id) : newExpanded.add(id);
+        if (newExpanded.has(id)) {
+            newExpanded.delete(id);
+        } else {
+            newExpanded.add(id);
+        }
         setExpandedItineraries(newExpanded);
     };
 
@@ -32,21 +44,19 @@ const CityDetail = () => {
         }));
     };
 
-    if (loading) return <h1>Loading itineraries...</h1>;
-    if (error) return <h1>Error: {error}</h1>;
     if (!city) return <h1>City not found</h1>;
 
     return (
         <div className="flex flex-col min-h-screen">
             <div
                 className="bg-cover bg-center h-screen relative"
-                style={{ backgroundImage: `url(${city.photo})` }}
+                style={{ backgroundImage: city?.photo ? `url(${city.photo})` : 'none' }}
             >
                 <div className="bg-black bg-opacity-30 h-full flex flex-col items-center justify-center text-center">
                     <h1 className="text-7xl font-bold text-white">
-                        {city.city}, {city.country}
+                        {city.city || 'Unknown City'}, {city.country || 'Unknown Country'}
                     </h1>
-                    <p className="text-xl text-white mt-4 px-4">{city.description}</p>
+                    <p className="text-xl text-white mt-4 px-4">{city.description || 'No description available'}</p>
                     <button
                         onClick={() => navigate('/cities')}
                         className="mt-4 bg-blue-500 hover:bg-gray-700 text-white py-3 px-5 rounded text-lg"
@@ -63,19 +73,19 @@ const CityDetail = () => {
                         {Array.isArray(itineraries) && itineraries.length > 0 ? (
                             itineraries.map((itinerary) => (
                                 <div
-                                    key={itinerary._id}
+                                    key={itinerary?._id}
                                     className="relative overflow-hidden w-full sm:w-[min(100%,40rem)] h-auto border bg-slate-50 dark:bg-black dark:border dark:border-slate-700 rounded-lg shadow-xl p-8 flex flex-col justify-between"
                                 >
                                     <div className="flex items-center mb-6">
                                         <img
-                                            src={itinerary.userPhoto}
-                                            alt={itinerary.userName}
+                                            src={itinerary?.userPhoto || ''}
+                                            alt={itinerary?.userName || 'User Photo'}
                                             className="w-28 h-28 rounded-full border-2 border-gray-300 mr-4"
                                         />
                                         <div className="flex items-center justify-between w-full">
                                             <div className="mr-2 text-center">
                                                 <p className="text-xl text-gray-500">Created by</p>
-                                                <h2 className="font-bold text-3xl">{itinerary.userName}</h2>
+                                                <h2 className="font-bold text-3xl">{itinerary?.userName || 'Unknown User'}</h2>
                                             </div>
                                             <button
                                                 onClick={() => handleLike(itinerary._id)}
@@ -83,8 +93,7 @@ const CityDetail = () => {
                                                 aria-label="Like"
                                             >
                                                 <HeartIcon
-                                                    className={`h-10 w-10 ${likesCount[itinerary._id] ? 'text-red-500' : 'text-gray-300'
-                                                        }`}
+                                                    className={`h-10 w-10 ${likesCount[itinerary._id] ? 'text-red-500' : 'text-gray-300'}`}
                                                 />
                                             </button>
                                             <span className="text-gray-700 ml-2">
@@ -92,9 +101,9 @@ const CityDetail = () => {
                                             </span>
                                         </div>
                                     </div>
-                                    <p className="text-3xl text-gray-700">{itinerary.price}$ 💵</p>
-                                    <p className="text-3xl text-gray-700">{itinerary.duration}h ⏰</p>
-                                    <p className="text-3xl text-gray-700">{itinerary.hashtags.join(', ')}</p>
+                                    <p className="text-3xl text-gray-700">{itinerary?.price || 0}$ 💵</p>
+                                    <p className="text-3xl text-gray-700">{itinerary?.duration || 0}h ⏰</p>
+                                    <p className="text-3xl text-gray-700">{(itinerary?.hashtags || []).join(', ')}</p>
 
                                     <div className="flex justify-center mt-6">
                                         <button

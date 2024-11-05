@@ -1,4 +1,4 @@
-// store/reducers/itinerariesReducer.js
+
 import {
   FETCH_ITINERARIES_REQUEST,
   FETCH_ITINERARIES_SUCCESS,
