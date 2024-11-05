@@ -18,6 +18,7 @@ const CityDetail = () => {
     const [likesCount, setLikesCount] = useState({});
 
     useEffect(() => {
+        console.log("cityId in useParams:", cityId); // Verifica que `cityId` tenga el ID correcto
         if (cityId && !city) {
             dispatch(fetchCities()); // Carga las ciudades si no están disponibles
             dispatch(fetchItineraries(cityId)); // Carga itinerarios para la ciudad
