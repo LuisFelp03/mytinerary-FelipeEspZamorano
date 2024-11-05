@@ -12,16 +12,16 @@ const CityDetail = () => {
 
     const cities = useSelector((state) => state.city.cities);
     const itineraries = useSelector((state) => state.itineraries.itineraries);
-    const city = cities.find((city) => city._id === cityId); // Obtiene la ciudad directamente
+    const city = cities.find((city) => city._id === cityId);
 
     const [expandedItineraries, setExpandedItineraries] = useState(new Set());
     const [likesCount, setLikesCount] = useState({});
 
     useEffect(() => {
-        console.log("cityId in useParams:", cityId); // Verifica que `cityId` tenga el ID correcto
+        console.log("cityId in useParams:", cityId);
         if (cityId && !city) {
-            dispatch(fetchCities()); // Carga las ciudades si no están disponibles
-            dispatch(fetchItineraries(cityId)); // Carga itinerarios para la ciudad
+            dispatch(fetchCities());
+            dispatch(fetchItineraries(cityId));
         }
     }, [dispatch, cityId, city]);
 
@@ -42,10 +42,8 @@ const CityDetail = () => {
         }));
     };
 
-    // Mostrar mensaje si la ciudad no se encuentra
     if (!city) return <h1>City not found</h1>;
 
-    // Renderiza los detalles de la ciudad e itinerarios
     return (
         <div className="flex flex-col min-h-screen">
             <div
@@ -134,34 +132,3 @@ const CityDetail = () => {
 
 export default CityDetail;
 
-// import { useEffect } from 'react';
-// import { useParams } from 'react-router-dom';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { fetchItineraries } from '../store/actions/itinerariesActions';
-// import { selectCity } from '../redux/slices/citySlice';
-
-// const CityDetail = () => {
-//     const { cityId } = useParams(); // `cityId` debería ser un string, no un objeto
-//     const dispatch = useDispatch();
-
-//     const itineraries = useSelector((state) => state.itineraries.itineraries);
-//     const city = useSelector((state) => state.city.selectedCity);
-
-//     useEffect(() => {
-//         console.log("cityId in useParams:", cityId); // Confirmación de que `cityId` es un string
-//         if (cityId) {
-//             dispatch(selectCity(cityId)); // Asegúrate de pasar solo el `id` aquí
-//             dispatch(fetchItineraries(cityId));
-//         }
-//     }, [dispatch, cityId]);
-
-//     if (!city) return <h1>City not found</h1>;
-
-//     return (
-//         <div>
-//             {/* Renderizado de detalles de la ciudad e itinerarios */}
-//         </div>
-//     );
-// };
-
-// export default CityDetail;
