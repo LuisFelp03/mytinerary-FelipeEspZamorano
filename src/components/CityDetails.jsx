@@ -11,7 +11,7 @@ const CityDetail = () => {
     const navigate = useNavigate();
 
     const cities = useSelector((state) => state.city.cities);
-    const itineraries = useSelector((state) => state.itineraries.itineraries);
+    const { itineraries } = useSelector((state) => state.itineraries);
     const city = cities.find((city) => city._id === cityId);
 
     const [expandedItineraries, setExpandedItineraries] = useState(new Set());
@@ -41,7 +41,7 @@ const CityDetail = () => {
             [id]: (prev[id] || 0) + 1,
         }));
     };
-
+    console.log(city, "city")
     if (!city) return <h1>City not found</h1>;
 
     return (
@@ -52,7 +52,7 @@ const CityDetail = () => {
             >
                 <div className="bg-black bg-opacity-30 h-full flex flex-col items-center justify-center text-center">
                     <h1 className="text-7xl font-bold text-white">
-                        {city.city || 'Unknown City'}, {city.country || 'Unknown Country'}
+                        {city.name || 'Unknown City'}, {city.country || 'Unknown Country'}
                     </h1>
                     <p className="text-xl text-white mt-4 px-4">{city.description || 'No description available'}</p>
                     <button
@@ -76,14 +76,14 @@ const CityDetail = () => {
                                 >
                                     <div className="flex items-center mb-6">
                                         <img
-                                            src={itinerary?.userPhoto || ''}
-                                            alt={itinerary?.userName || 'User Photo'}
+                                            src={itinerary?.publisherPhoto || ''}
+                                            alt={itinerary?.publisherName || 'User Photo'}
                                             className="w-28 h-28 rounded-full border-2 border-gray-300 mr-4"
                                         />
                                         <div className="flex items-center justify-between w-full">
                                             <div className="mr-2 text-center">
                                                 <p className="text-xl text-gray-500">Created by</p>
-                                                <h2 className="font-bold text-3xl">{itinerary?.userName || 'Unknown User'}</h2>
+                                                <h2 className="font-bold text-3xl">{itinerary?.publisherName || 'Unknown User'}</h2>
                                             </div>
                                             <button
                                                 onClick={() => handleLike(itinerary._id)}

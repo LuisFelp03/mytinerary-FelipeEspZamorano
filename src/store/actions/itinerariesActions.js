@@ -1,32 +1,14 @@
-// store/actions/itinerariesAction.js
-export const FETCH_ITINERARIES_REQUEST = 'FETCH_ITINERARIES_REQUEST';
-export const FETCH_ITINERARIES_SUCCESS = 'FETCH_ITINERARIES_SUCCESS';
-export const FETCH_ITINERARIES_FAILURE = 'FETCH_ITINERARIES_FAILURE';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-export const fetchItinerariesRequest = () => ({
-  type: FETCH_ITINERARIES_REQUEST,
-});
+export const fetchItineraries = createAsyncThunk('fetchItineraries', async (cityId) => {
 
-export const fetchItinerariesSuccess = (itineraries) => ({
-  type: FETCH_ITINERARIES_SUCCESS,
-  payload: itineraries,
-});
+  try {
 
-export const fetchItinerariesFailure = (error) => ({
-  type: FETCH_ITINERARIES_FAILURE,
-  payload: error,
-});
+    const itineraries = await axios.get(`http://localhost:8080/api/itineraries/city/${cityId}`);
+    return itineraries.data.response;
+  } catch (error) {
+    return error;
+  }
 
-// Async action creator
-export const fetchItineraries = (cityId) => {
-  return async (dispatch) => {
-    dispatch(fetchItinerariesRequest());
-    try {
-      const response = await fetch(`http://localhost:8080/api/itineraries/itinerary/${cityId}`);
-      const data = await response.json();
-      dispatch(fetchItinerariesSuccess(data.response));
-    } catch (error) {
-      dispatch(fetchItinerariesFailure(error.message));
-    }
-  };
-};
+})

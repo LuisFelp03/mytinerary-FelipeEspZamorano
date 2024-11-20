@@ -1,9 +1,5 @@
-
-import {
-  FETCH_ITINERARIES_REQUEST,
-  FETCH_ITINERARIES_SUCCESS,
-  FETCH_ITINERARIES_FAILURE,
-} from '../actions/itinerariesActions';
+import { createReducer } from "@reduxjs/toolkit";
+import { fetchItineraries } from "../actions/itinerariesActions";
 
 const initialState = {
   loading: false,
@@ -11,17 +7,22 @@ const initialState = {
   error: '',
 };
 
-const itinerariesReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case FETCH_ITINERARIES_REQUEST:
-      return { ...state, loading: true };
-    case FETCH_ITINERARIES_SUCCESS:
-      return { loading: false, itineraries: action.payload, error: '' };
-    case FETCH_ITINERARIES_FAILURE:
-      return { loading: false, itineraries: [], error: action.payload };
-    default:
-      return state;
-  }
-};
 
-export default itinerariesReducer;
+const itinerariesReducer = createReducer(initialState, ((builder) => {
+  builder.addCase(fetchItineraries.pending, (state) => {
+    state.loading = true;
+  })
+    .addCase(fetchItineraries.fulfilled, (state, action) => {
+      state.loading = false;
+      state.itineraries = action.payload;
+      state.error = '';
+    })
+    .addCase(fetchItineraries.rejected, (state, action) => {
+      state.loading = false;
+      state.itineraries = [];
+      state.error = action.error;
+    });
+
+}))
+
+export default itinerariesReducer
